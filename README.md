@@ -4,9 +4,20 @@ Rohde & Schwarz **NGPV 40/5** (40 V / 5 A, Bestellbez. 192.0326.40), Blank-Panel
 rein IEC-Bus-programmierbar, ohne Display und Bedienelemente.
 
 **Stand: funktional.** Das Gerät nahm über Jahre zwar Spannungssollwerte an, lieferte aber
-keinen Strom an die Last. Ursache war kein Bauteildefekt, sondern eine Kombination aus
-oxidierten DIN-41612-Backplane-Steckern und einer Fehlinterpretation der Range-Codes.
-Nach Steckerreinigung und Referenzjustage arbeitet das Netzteil im Rahmen seiner Spezifikation.
+keinen Strom an die Last. Ursache war kein Bauteildefekt, sondern das Zusammenspiel von drei
+harmlosen Dingen:
+
+1. **Das Gerät startet immer im mA-Bereich.** Manual S. 34: „Nach dem Netzanschalten ist am
+   Gerät immer der mA-Bereich gewählt." Ohne ein explizites `1R` liegt der Strom-Endwert bei
+   ~999 mA — die damalige Last war für ein Vielfaches ausgelegt.
+2. **Das Sollwert-Format ist rechtsbündig.** `5A` programmiert nicht 5 A, sondern 0,05 A —
+   im Default-mA-Bereich sogar nur 5 mA.
+3. **Oxidierte DIN-41612-Backplane-Kontakte** nach Jahren Standzeit, intermittierend.
+
+Alle drei wirken in dieselbe Richtung, und da die Blank-Panel-Variante kein Display hat, ist
+der Wechsel in die Strombegrenzung ohne Multimeter oder Parallel-Poll nicht zu sehen: Das
+Gerät regelt korrekt, nur eben auf einen Bruchteil des erwarteten Stroms. Nach
+Kontaktreinigung und Referenzjustage arbeitet das Netzteil im Rahmen seiner Spezifikation.
 
 ## Aufbau
 

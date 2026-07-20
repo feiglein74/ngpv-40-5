@@ -19,7 +19,7 @@ Gerät ist **funktional**.
 - ~5 % Drift der Spannungsreferenz (Sollwert 12.00 V → Ist 11.40 V Leerlauf). Justierbar mit R1162 auf DAC-Karte 202.237 (Manual Section 3.1.j).
 - Backplane-Stecker zeigten Wackelkontakte (Oxidation nach Jahren Standzeit). Wenn nicht gereinigt → Defekt kommt zurück.
 
-**Ursprüngliches Symptom („akzeptiert Spannung, liefert keinen Strom"):** kein echter Bauteildefekt. War eine Kombination aus Wackelkontakt-Episode am DIN-41612-Backplane-Stecker und Range-Code-Fehlinterpretation in der ersten Diagnose-Phase.
+**Ursprüngliches Symptom („akzeptiert Spannung, liefert keinen Strom"):** kein echter Bauteildefekt. War eine Verkettung aus dem Power-On-Default des Geräts (immer mA-Bereich, Endwert ~999 mA), dem rechtsbündigen Sollwert-Format und einer Wackelkontakt-Episode am DIN-41612-Backplane-Stecker. Siehe Phase 15.
 
 ---
 
@@ -345,12 +345,13 @@ Befund: **Nicht-linearer Restfehler** — 12 V (DAC-Code 1200, knapp nach Bit-10
 
 **Re-Interpretation des Original-Defekts „liefert keinen Strom":**
 
-Der ursprüngliche Defekt von vor Jahren war mit hoher Wahrscheinlichkeit **kein Hardware-Defekt**, sondern eine Verkettung aus zwei harmlosen Faktoren:
+Der ursprüngliche Defekt von vor Jahren war mit hoher Wahrscheinlichkeit **kein Hardware-Defekt**, sondern eine Verkettung aus drei harmlosen Faktoren:
 
-1. **Format-Fehlinterpretation des Strom-Sollwerts:** Das NGPV-Befehlsformat ist **rechtsbündig 3-stellig** mit fest skaliertem Bereichsendwert. Wer intuitiv `5A` als „5 Ampere" liest, programmiert real **0.05 A = 50 mA** im A-Bereich (oder 5 mA im mA-Bereich). Jede halbwegs ohmsche Last drückt das Gerät dann sofort in **CC-Mode bei winzigem Strom**, und am Ausgang misst man scheinbar „nichts". Genau dieses Stolperstein habe ich in der ersten Phase dieser Diagnose-Session selbst auch gemacht — der Befund passt also zur Symptomatik.
-2. **Wackelkontakt am Backplane-Stecker:** Über Jahre Lagerung oxidiert, intermittierend.
+1. **Power-On-Default = mA-Bereich (nachgetragen 2026-07-20):** Manual Seite 34, Abschnitt „Strombereichsumschaltung": *„Nach dem Netzanschalten ist am Gerät immer der mA-Bereich gewählt."* Ohne explizites `1R` liegt der Strom-Endwert also grundsätzlich bei ~999 mA — **unabhängig vom programmierten Sollwert**. Sascha bestätigt (2026-07-20), dass die Kiste damals ohne `1R` betrieben wurde, an einer für ein Vielfaches ausgelegten Last. Das allein erklärt das Symptom bereits vollständig, und es verschärft Faktor 1: `5A` landet nicht bei 50 mA, sondern bei 5 mA. Dieser Punkt wurde in der Diagnose-Session zu spät erkannt und fehlte in der ursprünglichen Fassung dieser Analyse.
+2. **Format-Fehlinterpretation des Strom-Sollwerts:** Das NGPV-Befehlsformat ist **rechtsbündig 3-stellig** mit fest skaliertem Bereichsendwert. Wer intuitiv `5A` als „5 Ampere" liest, programmiert real **0.05 A = 50 mA** im A-Bereich (oder 5 mA im mA-Bereich). Jede halbwegs ohmsche Last drückt das Gerät dann sofort in **CC-Mode bei winzigem Strom**, und am Ausgang misst man scheinbar „nichts". Genau dieses Stolperstein habe ich in der ersten Phase dieser Diagnose-Session selbst auch gemacht — der Befund passt also zur Symptomatik.
+3. **Wackelkontakt am Backplane-Stecker:** Über Jahre Lagerung oxidiert, intermittierend.
 
-Beide wirken in dieselbe Richtung und verstärken sich. Da das Gerät **kein Display** hat (Blank-Panel-Variante), ist der CV/CC-Mode-Wechsel ohne externes Multimeter oder Parallel-Poll nicht erkennbar — das Symptom „Spannung übernommen, kein Strom" ist dann genau das, was man sieht.
+Alle drei wirken in dieselbe Richtung und verstärken sich. Da das Gerät **kein Display** hat (Blank-Panel-Variante), ist der CV/CC-Mode-Wechsel ohne externes Multimeter oder Parallel-Poll nicht erkennbar — das Symptom „Spannung übernommen, kein Strom" ist dann genau das, was man sieht.
 
 **Konsequenz:** Die Endstufe (Linear-Pass-Stage, Stromloop, OUTPUT-Relais, Trafo, Elkos) war wahrscheinlich nie defekt. Verifiziert durch:
 - Volle CV-Linearität bis 35 V (≤0.05 % nach Justage)

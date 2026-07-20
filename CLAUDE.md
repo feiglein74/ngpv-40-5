@@ -18,7 +18,9 @@ Kein SCPI. Kein Read-back. Rechtsbündige Ziffernfolge + Buchstabe:
 **Fallen:**
 - `12V` heißt **0,12 V**, nicht 12 V. Immer auf 4 Stellen denken.
 - `1R` ist der **A-Bereich**, nicht mA. Kontraintuitiv, hat schon eine Fehldiagnose verursacht.
-- Nach Power-On ist per Default der **mA-Bereich** aktiv.
+- Nach Power-On ist per Default **immer der mA-Bereich** aktiv (Manual S. 34). Ohne
+  explizites `1R` ist der Strom-Endwert ~999 mA — **egal was als Sollwert programmiert
+  wurde**. Das war der Hauptgrund für das jahrelange „liefert keinen Strom".
 - Ein Bereichswechsel wirft den Ausgang auf Standby → danach Setpoint neu + `C` senden.
 
 ## Steuerung
@@ -55,8 +57,12 @@ Zwei Dinge, die der Wrapper **nicht** tut — bei Bedarf von Hand:
 - **Cermet-Trimmer settlen mechanisch.** Nach dem Drehen 1–2 min beobachten und nachjustieren,
   bevor eine Position als final gilt — die erste Einstellung wandert um bis zu 0,5 %.
 - **Warm justieren.** Kalt driften Referenz und Trimmer; 30 min Warmlauf vor jeder Justage.
-- Bei Vintage-Geräten gilt: erst Format, Stecker und Bedienung quervalidieren, dann Hardware
-  verdächtigen. Das ursprüngliche „liefert keinen Strom" war kein Bauteildefekt.
+- Bei Vintage-Geräten gilt: erst Bereich, Format, Stecker und Bedienung quervalidieren, dann
+  Hardware verdächtigen. Das ursprüngliche „liefert keinen Strom" war kein Bauteildefekt,
+  sondern der mA-Default plus rechtsbündiges Format plus oxidierte Kontakte.
+- **Ohne Display sieht man den CC-Modus nicht.** Ein Gerät, das korrekt auf einen viel zu
+  kleinen Strom regelt, ist von einem defekten Gerät nur per Multimeter oder Parallel-Poll
+  zu unterscheiden. Diese Verwechslung hat das Netzteil jahrelang als „defekt" gelten lassen.
 
 ## Bauteil-Identifikation
 
