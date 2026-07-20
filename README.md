@@ -27,6 +27,16 @@ ngpv 20v 1a on     # Sollwerte + Output ein
 ngpv off
 ```
 
+Voraussetzung ist ein `ngpv`-Eintrag in `/etc/gpib.conf` mit der richtigen GPIB-Adresse
+(**PAD 12**, per DIP an der Rückwand, wird nur beim Power-On gelatcht):
+
+```bash
+bash setup_ngpv_conf.sh     # legt den Block an oder korrigiert den pad-Wert
+```
+
+Das ist kein Selbstzweck: Arbeiten an einem zweiten GPIB-Gerät haben den Wert schon
+einmal stillschweigend verstellt, was sich nur als „Gerät antwortet nicht" äußert.
+
 Der Wrapper liegt als `bin/ngpv` im Repo und spricht linux-gpib über `python3-gpib`.
 Damit er im PATH liegt, ist er nach `~/.local/bin/ngpv` gesymlinkt:
 
@@ -52,6 +62,7 @@ Relevant, weil das Gerät für Cap-Reform als 40-V-Quelle genutzt wird.
 | Datei | Inhalt |
 |---|---|
 | `bin/ngpv` | CLI-Wrapper für die GPIB-Steuerung |
+| `setup_ngpv_conf.sh` | Trägt den `ngpv`-Block in `/etc/gpib.conf` ein bzw. korrigiert ihn |
 | `REPAIR_LOG.md` | Vollständige Reparaturhistorie, Linux-GPIB-Setup, Lessons Learned |
 | `TODO.md` | Schritt-für-Schritt-Anleitung für die mA-Bereich-Stromjustage |
 | `CLAUDE.md` | Befehlsformat, Fallstricke, Bauteil-Identifikation |
