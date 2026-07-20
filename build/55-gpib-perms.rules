@@ -1,0 +1,2 @@
+# /dev/gpib* zugaenglich fuer Gruppe 'dialout' (feig ist Mitglied)
+KERNEL=="gpib[0-9]*", GROUP="dialout", MODE="0660"

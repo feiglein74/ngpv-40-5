@@ -1,0 +1,71 @@
+#!/usr/bin/env python3
+"""ngpv — kompakter CLI-Wrapper für R&S NGPV 40/5 über GPIB (PAD 12).
+
+Beispiele:
+  ngpv 20v 0.01a         # Spannung + Strombegrenzung setzen
+  ngpv 5v                # nur Spannung
+  ngpv 250ma             # Strom in mA-Schreibweise (Skala bleibt A-Bereich)
+  ngpv on / ngpv off     # Output ein/aus
+  ngpv 20v 1a on         # alles in einem
+"""
+import sys, re, time
+import Gpib
+
+
+def parse(arg: str):
+    a = arg.lower().replace(",", ".")
+    if a in ("on", "off"):
+        return ("state", a)
+    m = re.fullmatch(r"([0-9]+(?:\.[0-9]+)?)(v|a|ma)", a)
+    if not m:
+        return None
+    val = float(m.group(1))
+    unit = m.group(2)
+    if unit == "ma":
+        return ("a", val / 1000.0)
+    return (unit, val)
+
+
+def fmt_v(v: float) -> bytes:
+    n = round(v * 100)
+    if not 0 <= n <= 4099:
+        raise SystemExit(f"voltage out of range (0..40.99 V): {v}")
+    return f"{n:04d}V".encode()
+
+
+def fmt_a(a: float) -> bytes:
+    # A-Bereich, X.XX
+    n = round(a * 100)
+    if not 0 <= n <= 499:
+        raise SystemExit(f"current out of range (0..4.99 A): {a}")
+    return f"{n:03d}A".encode()
+
+
+def main():
+    if len(sys.argv) < 2:
+        print(__doc__)
+        sys.exit(1)
+
+    cmds = []
+    for arg in sys.argv[1:]:
+        p = parse(arg)
+        if p is None:
+            raise SystemExit(f"unbekannt: {arg!r}")
+        kind, val = p
+        if kind == "v":
+            cmds.append(fmt_v(val))
+        elif kind == "a":
+            cmds.append(fmt_a(val))
+        elif kind == "state":
+            cmds.append(b"C" if val == "on" else b"S")
+
+    dev = Gpib.Gpib("ngpv")
+    dev.timeout(13)
+    for c in cmds:
+        dev.write(c)
+        print(f"  {c.decode()}")
+        time.sleep(0.15)
+
+
+if __name__ == "__main__":
+    main()

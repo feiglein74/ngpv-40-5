@@ -1,0 +1,23 @@
+# OCR-Zwischenprodukte — aus dem Original-PDF regenerierbar
+ocr_output/
+service_manual.txt
+
+# Tesseract-Sprachdaten (Downloads, 31 MB)
+tessdata/
+deu.traineddata
+
+# Fremd-Source und Downloads unter build/ — nur eigene Skripte und Configs tracken
+build/*
+!build/*.py
+!build/gpib.conf
+!build/55-gpib-perms.rules
+
+# Claude Code workspace
+.claude/
+
+# Hersteller-Dokumentation (© Rohde & Schwarz) — gesichert im privaten Repo:
+# https://github.com/feiglein74/ngpv-40-5-private
+NGPV_Service_Manual.md
+manual_pages/
+rohde-schwarz_ngpv_*.pdf
+R&S-NGPV40-3_datasheet_01.pdf
